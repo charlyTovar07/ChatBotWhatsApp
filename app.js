@@ -1,45 +1,37 @@
-const axios = require('axios');
+// Import Express.js
+const express = require('express');
 
-app.post('/webhook', async (req, res) => {
-  try {
-    const entry = req.body.entry?.[0];
-    const change = entry?.changes?.[0];
-    const value = change?.value;
+// Create an Express app
+const app = express();
 
-    const message = value?.messages?.[0];
-    if (!message) {
-      return res.sendStatus(200);
-    }
+// Middleware to parse JSON bodies
+app.use(express.json());
 
-    const from = message.from;
-    const text = message.text?.body;
+// Set port and verify_token
+const port = process.env.PORT || 3000;
+const verifyToken = process.env.VERIFY_TOKEN;
 
-    if (!text) {
-      return res.sendStatus(200);
-    }
+// Route for GET requests
+app.get('/webhook', (req, res) => {
+  const { 'hub.mode': mode, 'hub.challenge': challenge, 'hub.verify_token': token } = req.query;
 
-    console.log('Incoming message:', text);
-
-    await axios.post(
-      `https://graph.facebook.com/v24.0/${process.env.PHONE_NUMBER_ID}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        to: from,
-        text: {
-          body: `Eco: ${text}`
-        }
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error('Error sending reply:', error.response?.data || error.message);
-    res.sendStatus(200);
+  if (mode === 'subscribe' && token === verifyToken) {
+    console.log('WEBHOOK VERIFIED');
+    res.status(200).send(challenge);
+  } else {
+    res.status(403).end();
   }
+});
+
+// Route for POST requests
+app.post('/webhook', (req, res) => {
+  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
+  console.log(`\n\nWebhook received ${timestamp}\n`);
+  console.log(JSON.stringify(req.body, null, 2));
+  res.status(200).end();
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`\nListening on port ${port}\n`);
 });
