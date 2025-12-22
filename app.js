@@ -1,50 +1,62 @@
-// Import Express.js
-const express = require('express');
+import express from 'express';
+import axios from 'axios';
+import 'dotenv/config';
 
-// Create an Express app
 const app = express();
-
-// Middleware to parse JSON bodies
 app.use(express.json());
 
-// Set port and verify_token
-const port = process.env.PORT || 3000;
-const verifyToken = process.env.VERIFY_TOKEN;
+const PORT = process.env.PORT || 3000;
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 
-// Route for GET requests
+// Verificación del webhook
 app.get('/webhook', (req, res) => {
-  const { 'hub.mode': mode, 'hub.challenge': challenge, 'hub.verify_token': token } = req.query;
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
 
-  if (mode === 'subscribe' && token === verifyToken) {
+  if (mode === 'subscribe' && token === VERIFY_TOKEN) {
     console.log('WEBHOOK VERIFIED');
-    res.status(200).send(challenge);
-  } else {
-    res.status(403).end();
+    return res.status(200).send(challenge);
   }
+
+  return res.sendStatus(403);
 });
 
-// Route for POST requests
-app.post('/webhook', (req, res) => {
-  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  console.log(`\n\nWebhook received ${timestamp}\n`);
-  console.log(JSON.stringify(req.body, null, 2));
-  res.status(200).end();
+// Recepción de mensajes
+app.post('/webhook', async (req, res) => {
+  console.log('Webhook received:', JSON.stringify(req.body, null, 2));
+
+  const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+
+  if (message?.type === 'text') {
+    const from = message.from;
+    const text = message.text.body;
+
+    try {
+      await axios.post(
+        `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
+        {
+          messaging_product: 'whatsapp',
+          to: from,
+          text: { body: `Eco: ${text}` }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    } catch (err) {
+      console.error('WA ERROR:', err.response?.data || err.message);
+    }
+  }
+
+  res.sendStatus(200);
 });
 
-await axios.post(
-  `https://graph.facebook.com/v24.0/${BUSINESS_PHONE}/messages`,
-  {
-    messaging_product: "whatsapp",
-    to: from,
-    text: { body: "Eco: " + text }
-  },
-  {
-    headers: { Authorization: `Bearer ${API_TOKEN}` }
-  }
-);
-
-
-// Start the server
-app.listen(port, () => {
-  console.log(`\nListening on port ${port}\n`);
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
 });
