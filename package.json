@@ -7,5 +7,24 @@
   "devDependencies": {
     "localtunnel": "^2.0.2",
     "nodemon": "^3.1.11"
-  }
+  },
+  "name": "vetpet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlyTovar07/ChatBotWhatsApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/charlyTovar07/ChatBotWhatsApp/issues"
+  },
+  "homepage": "https://github.com/charlyTovar07/ChatBotWhatsApp#readme"
 }
