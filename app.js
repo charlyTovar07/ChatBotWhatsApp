@@ -1,5 +1,6 @@
-const express = require('express');
-const axios = require('axios');
+import express from 'express';
+import axios from 'axios';
+import 'dotenv/config';
 
 const app = express();
 app.use(express.json());
@@ -7,7 +8,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
-// 🔹 Verificación del webhook
+// Verificación del webhook
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
@@ -21,7 +22,7 @@ app.get('/webhook', (req, res) => {
   return res.sendStatus(403);
 });
 
-// 🔹 Recepción de mensajes + ECO
+// Recepción ECO
 app.post('/webhook', async (req, res) => {
   try {
     const entry = req.body.entry?.[0];
@@ -30,28 +31,23 @@ app.post('/webhook', async (req, res) => {
 
     const message = value?.messages?.[0];
     if (!message) {
-      // Ignora statuses, delivered, read, etc.
       return res.sendStatus(200);
     }
 
     const from = message.from;
     const text = message.text?.body;
-
     if (!text) {
       return res.sendStatus(200);
     }
 
     console.log('Mensaje recibido:', text);
 
-    // 🔹 Enviar ECO
     await axios.post(
       `https://graph.facebook.com/v24.0/${process.env.PHONE_NUMBER_ID}/messages`,
       {
         messaging_product: 'whatsapp',
         to: from,
-        text: {
-          body: `Eco: ${text}`
-        }
+        text: { body: `Eco: ${text}` }
       },
       {
         headers: {
@@ -71,7 +67,6 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// 🔹 Arranque del servidor
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
