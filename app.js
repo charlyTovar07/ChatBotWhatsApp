@@ -44,7 +44,7 @@ app.post('/webhook', async (req, res) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+            Authorization: `Bearer ${API_TOKEN}`,
             'Content-Type': 'application/json'
           }
         }
