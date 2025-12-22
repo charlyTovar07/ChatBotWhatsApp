@@ -1,64 +1,37 @@
-import express from "express";
-import axios from "axios";
-import "dotenv/config";
+// Import Express.js
+const express = require('express');
 
+// Create an Express app
 const app = express();
+
+// Middleware to parse JSON bodies
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-const WHATSAPP_TOKEN = process.env.API_TOKEN;
-const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
+// Set port and verify_token
+const port = process.env.PORT || 3000;
+const verifyToken = process.env.VERIFY_TOKEN;
 
-// Verificación del webhook
-app.get("/webhook", (req, res) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
+// Route for GET requests
+app.get('/webhook', (req, res) => {
+  const { 'hub.mode': mode, 'hub.challenge': challenge, 'hub.verify_token': token } = req.query;
 
-  if (mode === "subscribe" && token === VERIFY_TOKEN) {
-    console.log("WEBHOOK VERIFIED");
-    return res.status(200).send(challenge);
+  if (mode === 'subscribe' && token === verifyToken) {
+    console.log('WEBHOOK VERIFIED');
+    res.status(200).send(challenge);
+  } else {
+    res.status(403).end();
   }
-
-  return res.sendStatus(403);
 });
 
-// Recepción de mensajes
-app.post("/webhook", async (req, res) => {
-  console.log("Webhook received:", JSON.stringify(req.body, null, 2));
-
-  const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-
-  if (message?.type === "text") {
-    const from = message.from;
-    const text = message.text.body;
-
-    try {
-      await axios.post(
-        `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
-        {
-          messaging_product: "whatsapp",
-          to: from,
-          text: { body: `Eco: ${text}` },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${WHATSAPP_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("TOKEN EXISTS:", !!process.env.WHATSAPP_TOKEN);
-      console.log("TOKEN PREVIEW:", process.env.WHATSAPP_TOKEN?.slice(0, 10));
-    } catch (err) {
-      console.error("WA ERROR:", err.response?.data || err.message);
-    }
-  }
-
-  res.sendStatus(200);
+// Route for POST requests
+app.post('/webhook', (req, res) => {
+  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
+  console.log(`\n\nWebhook received ${timestamp}\n`);
+  console.log(JSON.stringify(req.body, null, 2));
+  res.status(200).end();
 });
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+// Start the server
+app.listen(port, () => {
+  console.log(`\nListening on port ${port}\n`);
 });
