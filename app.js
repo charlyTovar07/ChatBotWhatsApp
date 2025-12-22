@@ -31,6 +31,19 @@ app.post('/webhook', (req, res) => {
   res.status(200).end();
 });
 
+await axios.post(
+  `https://graph.facebook.com/v24.0/${BUSINESS_PHONE}/messages`,
+  {
+    messaging_product: "whatsapp",
+    to: from,
+    text: { body: "Eco: " + text }
+  },
+  {
+    headers: { Authorization: `Bearer ${API_TOKEN}` }
+  }
+);
+
+
 // Start the server
 app.listen(port, () => {
   console.log(`\nListening on port ${port}\n`);
