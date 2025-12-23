@@ -116,7 +116,7 @@ class MessageHandler {
   async sendMedia(to, type) {
     const mediaMap = {
       audio: {
-        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/Bienvenida.m4a",
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/good_moorning.mp3",
         caption: null,
       },
       image: {
@@ -128,8 +128,8 @@ class MessageHandler {
         caption: "¡Esto es un video!",
       },
       document: {
-        url: "https://s3.amazonaws.com/gndx.dev/medpet-file.pdf",
-        caption: "¡Esto es un PDF!",
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/DOCUMENTO+DE+VALCOM+TI.docx",
+        caption: "¡Esto es un documento!",
       },
       sticker: {
         url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/sticker_vetpet.webp",
