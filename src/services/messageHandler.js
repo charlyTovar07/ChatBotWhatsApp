@@ -1,8 +1,7 @@
 import { whatsappService } from "../services/whatsappService.js";
 
 class MessageHandler {
-
-  constructor () {
+  constructor() {
     this.appointmentState = {};
   }
 
@@ -10,9 +9,9 @@ class MessageHandler {
     const from = message.from;
 
     if (message.type === "text") {
-      const text = message.text.body;
+      const rawText = message.text.body;
 
-      const incomingMessage = text
+      const incomingMessage = rawText
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -21,8 +20,12 @@ class MessageHandler {
       if (this.isGreeting(incomingMessage)) {
         await this.sendWelcomeMessage(from, message.id, senderInfo);
         await this.sendWelcomeMenu(from);
+      } else if (incomingMessage === "media") {
+        await this.sendMedia(from, "audio");
+      } else if (this.appointmentState[from]) {
+        await this.handleAppointmentFlow(from, incomingMessage);
       } else {
-        await whatsappService.sendMessage(from, `Echo: ${text}`, message.id);
+        await this.handleMenuOption(from, incomingMessage);
       }
 
       await whatsappService.markAsRead(message.id);
@@ -45,62 +48,47 @@ class MessageHandler {
   }
 
   isGreeting(message) {
-    const greetings = [
+    return [
       "hola",
       "hi",
-      "buenos días",
       "buenos dias",
       "buenas tardes",
       "buenas noches",
-    ];
-    return greetings.includes(message);
+    ].includes(message);
   }
 
   getSenderName(senderInfo) {
-    if (!senderInfo) return "Practicante de ValcomTI";
+    const name = senderInfo?.profile?.name || senderInfo?.wa_id || "Usuario";
 
-    const name =
-      senderInfo.profile?.name || senderInfo.wa_id || "Practicante de ValcomTI";
-
-    const firstName = name.split(" ")[0];
-    return firstName;
+    return name.split(" ")[0];
   }
 
   async sendWelcomeMessage(to, messageId, senderInfo) {
     const name = this.getSenderName(senderInfo);
-
-    const welcomeMessage =
-      `Hola ${name}, Bienvenido al servicio de PETVET online. ` +
-      "¿En que puedo ayudarte hoy?";
-
+    const welcomeMessage = `Hola ${name}, Bienvenido al servicio de PETVET online. ¿En que puedo ayudarte hoy?`;
     await whatsappService.sendMessage(to, welcomeMessage, messageId);
   }
 
   async sendWelcomeMenu(to) {
-    const menuMessage = "Elige una opción";
     const buttons = [
-      {
-        type: "reply",
-        reply: { id: "option_1", title: "Agendar" },
-      },
-      {
-        type: "reply",
-        reply: { id: "option_2", title: "Consultar" },
-      },
-      {
-        type: "reply",
-        reply: { id: "option_3", title: "Ubicación" },
-      },
+      { type: "reply", reply: { id: "option_1", title: "Agendar" } },
+      { type: "reply", reply: { id: "option_2", title: "Consultar" } },
+      { type: "reply", reply: { id: "option_3", title: "Ubicación" } },
     ];
 
-    await whatsappService.sendInteractiveBottons(to, menuMessage, buttons);
+    await whatsappService.sendInteractiveBottons(
+      to,
+      "Elige una opción",
+      buttons
+    );
   }
 
   async handleMenuOption(to, option) {
     let response;
+
     switch (option) {
       case "option_1":
-        this.appointmentState[to] = {step: 'name'}
+        this.appointmentState[to] = { step: "name" };
         response = "Por favor, ingresa tu nombre:";
         break;
       case "option_2":
@@ -113,6 +101,7 @@ class MessageHandler {
         response =
           "Lo siento, no entendí tu selección. Por favor elige una opción válida.";
     }
+
     await whatsappService.sendMessage(to, response);
   }
 
@@ -146,33 +135,45 @@ class MessageHandler {
     await whatsappService.sendMediaMessage(to, type, media.url, media.caption);
   }
 
-  async handleAppointmentFlow(to, message){
+  async handleAppointmentFlow(to, message) {
     const state = this.appointmentState[to];
     let response;
 
-    switch(state.step){
-      case 'name':
+    switch (state.step) {
+      case "name":
         state.name = message;
-        state.step = 'petName';
-        response = 'Gracias, ahora, ¿Cuál es el nombre de tu mascota?'
+        state.step = "petName";
+        response = "Gracias, ahora, ¿Cuál es el nombre de tu mascota?";
         break;
-      case 'petName':
+      case "petName":
         state.petName = message;
-        state.step = 'petType';
-        response = '¿Qué tipo de mascota es? (por ejemplo: perro, gato, huron, etc...)'
+        state.step = "petType";
+        response = "¿Qué tipo de mascota es?";
         break;
-      case 'petType':
+      case "petType":
         state.petType = message;
-        state.step = 'reason';
-        response = '¿Cuál es el motivo de la consulta?';
+        state.step = "reason";
+        response = "¿Cuál es el motivo de la consulta?";
         break;
-      case 'reason':
+      case "reason":
         state.reason = message;
-        response = 'Gracias por agendar tu cita'
+        response = this.completeAppointment(to);
+        break;
     }
-    await whatsappService.sendMessage(to, message);
+
+    await whatsappService.sendMessage(to, response);
   }
 
+  completeAppointment(to) {
+    const appointment = this.appointmentState[to];
+    delete this.appointmentState[to];
+
+    return `Gracias por agendar tu cita.
+            Nombre: ${appointment.name}
+            Mascota: ${appointment.petName}
+            Tipo: ${appointment.petType}
+            Motivo: ${appointment.reason}`;
+  }
 }
 
 export default new MessageHandler();
