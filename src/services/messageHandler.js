@@ -15,17 +15,16 @@ class MessageHandler {
       if (this.isGreeting(incomingMessage)) {
         await this.sendWelcomeMessage(from, message.id, senderInfo);
         await this.sendWelcomeMenu(from);
-      } else if(incomingMessage === 'media') {
-        await this.sendMedia(message.form);
       } else {
-        const response = `Echo: ${text}`;
-        await whatsappService.sendMessage(from, response, message.id);
+        await whatsappService.sendMessage(from, `Echo: ${text}`, message.id);
       }
 
       await whatsappService.markAsRead(message.id);
+    } else if (message?.type === "audio") {
+      await this.sendMedia(message.from);
+      await whatsappService.markAsRead(message.id);
     } else if (message?.type === "interactive") {
       const option = message.interactive?.button_reply?.id;
-
       await this.handleMenuOption(message.from, option);
       await whatsappService.markAsRead(message.id);
     }
@@ -102,10 +101,11 @@ class MessageHandler {
     await whatsappService.sendMessage(to, response);
   }
 
-  async sendMedia (to){
-    const mediaURL = 'https://www.dropbox.com/scl/fi/jawylgtksb7xrj12yy0j7/Bienvenida.m4a?rlkey=arrd1zlgpw6g7hnuv07eioro6&st=u90o3mg2&dl=1';
-    const caption = '¡Bienvenido!';
-    const type = 'audio';
+  async sendMedia(to) {
+    const mediaURL =
+      "https://www.dropbox.com/scl/fi/jawylgtksb7xrj12yy0j7/Bienvenida.m4a?rlkey=arrd1zlgpw6g7hnuv07eioro6&st=u90o3mg2&dl=1";
+    const caption = "¡Bienvenido!";
+    const type = "audio";
 
     await whatsappService.sendMediaMessage(to, type, mediaURL, caption);
   }
