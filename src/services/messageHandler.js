@@ -15,6 +15,8 @@ class MessageHandler {
       if (this.isGreeting(incomingMessage)) {
         await this.sendWelcomeMessage(from, message.id, senderInfo);
         await this.sendWelcomeMenu(from);
+      } else if(incomingMessage === 'media') {
+        await this.sendMedia(message.form);
       } else {
         const response = `Echo: ${text}`;
         await whatsappService.sendMessage(from, response, message.id);
@@ -98,6 +100,14 @@ class MessageHandler {
           "Lo siento, no entendí tu selección. Por favor elige una opción válida.";
     }
     await whatsappService.sendMessage(to, response);
+  }
+
+  async sendMedia (to){
+    const mediaURL = 'https://www.dropbox.com/scl/fi/jawylgtksb7xrj12yy0j7/Bienvenida.m4a?rlkey=arrd1zlgpw6g7hnuv07eioro6&st=u90o3mg2&dl=1';
+    const caption = '¡Bienvenido!';
+    const type = 'audio';
+
+    await whatsappService.sendMediaMessage(to, type, mediaURL, caption);
   }
 }
 
