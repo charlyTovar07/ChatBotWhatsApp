@@ -1,11 +1,10 @@
 import { whatsappService } from "../services/whatsappService.js";
 
 class MessageHandler {
-  async handleIncomingMessage(message, senderInfo) { 
+  async handleIncomingMessage(message, senderInfo) {
     if (message?.type === "text") {
       const from = message.from;
       const text = message.text.body;
-      const mediaFile = []
 
       const incomingMessage = text
         .toLowerCase()
@@ -14,15 +13,15 @@ class MessageHandler {
         .trim();
 
       if (this.isGreeting(incomingMessage)) {
-        await this.sendWelcomeMessage(from, message.id, senderInfo);
-        await this.sendWelcomeMenu(from);
+        await this.sendWelcomeMessage(message.from, message.id, senderInfo);
+        await this.sendWelcomeMenu(message.from);
+      } else if (message?.type === "media") {
+        await this.sendMedia(message.from);
+        await whatsappService.markAsRead(message.id);
       } else {
-        await whatsappService.sendMessage(from, `Echo: ${text}`, message.id);
+        const response = `Echo: ${message.text.body}`;
+        await whatsappService.sendMessage(message.from, response, message.id);
       }
-
-      await whatsappService.markAsRead(message.id);
-    } else if (message?.type === "media") {
-      await this.sendMedia(message.from);
       await whatsappService.markAsRead(message.id);
     } else if (message?.type === "interactive") {
       const option = message.interactive?.button_reply?.id;
@@ -103,12 +102,23 @@ class MessageHandler {
   }
 
   async sendMedia(to) {
-    const mediaURL =
-      "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/Bienvenida.m4a?response-content-disposition=inline&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEsaCXVzLWVhc3QtMiJHMEUCIEZVD8XUrguq6KFfO%2FTe74kaQihtO9IAIFS89ISeF5uFAiEAvG8%2BcfxntEVsnjcL%2BjWdfeEOMXDkL1II3j%2F%2BJahiYHsq%2BQIIFRAAGgw1NjYyMDg0MTcyODMiDKExSrpgMw3zh%2BCLvirWApp79BP0ZgHc9LhRCv2SOPvkvrqoYzsCKFAHSzX3oFHjzReh%2FHVR14eWXV5ONRKNd0iwlabQN4YcmwfUoVRuZV5dLdAZKWGG1YBIe%2F3lxckB%2BNEwKMe3HjBkg08hA2uOYsFhuT89lJGyVZTFbuIdHdhhSaXjMuACzbZYg44Hc3msQ%2BT4GL1bX1ekXBKVulGkz1%2FaUj89rA81H59c2MTOqJqSqxkbmCnUghPg2pbeCLkPOQD3%2FrLVOwKw9BD9okIbKNjXmvGLC6D3UHXVt2n5mvDcNqEre5CMp0qETyf9jPj9hV0VP%2F8stzPVItCBKoyzM5p7z%2Frr7G1BoBWceWdDsfgJP4Hd3jKLrHJSkItjnvPlqFXakDUI7u91WvGLibKlYM1wQUjmPq2EfRjJvzKSZoAAQnlQPDBps6%2BUTmj8wDsBmXXfSn4FZfW696qKCC2fVKFyVQVYVzDRyKvKBjqPAuY6P7i17%2BbQCgzSoV2SNzc3ERRUgufgytUbaJYzvj20SLK7It2q23low%2FrPcUm1hsgnRjv%2BA5JfxZsYPE3tCqUiSWPZga6BhtuCxAPEhB3vcIu%2FmpppsdD8kiBJ39yZR35NSDSmRI746K392htgt1x3HZvFgp8%2FCdazR5Q9AyufPpOjjROdF8uJjwiCurJ3VjjaGatXuvKIqJUFQANHQiSU%2Foej3NFQy9XKGEJuTgvi4pselC9%2BviR8XJIHCdpPj827c%2FYLCj%2FZTMKm26fEAWJEGe7ot3gJBgMl6Dh%2FV5KFSs91HAeEwwinOxJ6au3HcEUAp3RW%2Bbz8CWrl0vUkpnofe2fIFRj0T7DRF7EBwe8%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAYHVFGZYB7LHAG62T%2F20251223%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20251223T192350Z&X-Amz-Expires=36000&X-Amz-SignedHeaders=host&X-Amz-Signature=d6b156f85e33b212749d72e8825313214b2208b6c26e5ce35a5e3446bbbe00a2";
-    const caption = "¡Bienvenido!";
-    const type = "audio";
+    const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-audio.aac';
+    const caption = 'Bienvenida';
+    const type = 'audio';
 
-    await whatsappService.sendMediaMessage(to, type, mediaURL, caption);
+    // const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-imagen.png';
+    // const caption = '¡Esto es una Imagen!';
+    // const type = 'image';
+
+    // const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-video.mp4';
+    // const caption = '¡Esto es una video!';
+    // const type = 'video';
+
+    // const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-file.pdf';
+    // const caption = '¡Esto es un PDF!';
+    // const type = 'document';
+
+    await whatsappService.sendMediaMessage(to, type, mediaUrl, caption);
   }
 }
 
