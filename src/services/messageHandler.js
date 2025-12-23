@@ -2,25 +2,30 @@ import { whatsappService } from "../services/whatsappService.js";
 
 class MessageHandler {
   async handleIncomingMessage(message, senderInfo) {
-    if (message?.type !== "text") return;
+    if (message?.type !== "text") {
+      const from = message.from;
+      const text = message.text.body;
+      const incommingMessage = message.text.body
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
 
-    const from = message.from;
-    const text = message.text.body;
-    const incommingMessage = message.text.body
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim();
-
-    if (this.isGreeting(incommingMessage)) {
-      await this.sendWelcomeMessage(message.from, message.id, senderInfo);
-      await this.sendWelcomeMenu(message.from);
-
-    } else {
-      const response = `Echo: ${text}`;
-      await whatsappService.sendMessage(from, response, message.id);
+      if (this.isGreeting(incommingMessage)) {
+        await this.sendWelcomeMessage(message.from, message.id, senderInfo);
+        await this.sendWelcomeMenu(message.from);
+      } else {
+        const response = `Echo: ${text}`;
+        await whatsappService.sendMessage(from, response, message.id);
+      }
+      await whatsappService.markAsRead(message.id);
+    } else if (message?.type === "interactive") {
+      const option = message?.interactive?.button_reply?.title
+        .toLowerCase()
+        .tim();
+      await this.handleMenuOption(message.from, option);
+      await whatsappService.markAsRead(message.id);
     }
-    await whatsappService.markAsRead(message.id);
   }
 
   isGreeting(message) {
@@ -73,6 +78,26 @@ class MessageHandler {
     ];
 
     await whatsappService.sendInteractiveBottons(to, menuMessage, buttons);
+  }
+
+  async handleMenuOption(to, option) {
+    let response;
+
+    switch (option) {
+      case "agendar":
+        response = "Agendar Cita";
+        break
+      case "consultar":
+        response = "Realiza tu consulta";
+        break
+      case "ubicacion":
+        response: "Esta es nuestra Ubicación";
+        break
+      default:
+        response =
+          "Lo siento, no entendí tu selección. Por favor elige las opciones disponibles.";
+    }
+    await whatsappService.sendMessage(to, response);
   }
 }
 
