@@ -168,11 +168,24 @@ class MessageHandler {
     const appointment = this.appointmentState[to];
     delete this.appointmentState[to];
 
-    return `Gracias por agendar tu cita.
+    const userData = [
+      to,
+      appointment.name,
+      appointment.petName,
+      appointment.petType,
+      appointment.reason,
+      new Date().toISOString()
+    ]
+
+    console.log(userData);
+
+    return `Gracias por agendar tu cita. Resumen de tu cita:
             Nombre: ${appointment.name}
-            Mascota: ${appointment.petName}
-            Tipo: ${appointment.petType}
-            Motivo: ${appointment.reason}`;
+            Nombre de la mascota: ${appointment.petName}
+            Tipo de mascota: ${appointment.petType}
+            Motivo: ${appointment.reason}
+            
+            Nos pondremos en contacto contigo pronto, para confirmar la fecha y hora de tu cita.`;
   }
 }
 
