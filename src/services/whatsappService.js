@@ -101,7 +101,6 @@ class WhatsAppService {
           break;
         default:
           throw new Error("Not soported media Type.");
-          break;
       }
       await axios({
         method: "POST",
@@ -114,12 +113,12 @@ class WhatsAppService {
         data: {
           messaging_product: "whatsapp",
           to,
-          text: { body },
-          // context: { message_id: messageId },
+          type: type,
+          ...mediaObject,
         },
       });
     } catch (error) {
-      console.error(error);
+      console.error("Error sending Media", error);
     }
   }
 }
