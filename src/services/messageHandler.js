@@ -14,6 +14,8 @@ class MessageHandler {
 
     if (this.isGreeting(incommingMessage)) {
       await this.sendWelcomeMessage(message.from, message.id, senderInfo);
+      await this.sendInteractiveBottons(message.from);
+
     } else {
       const response = `Echo: ${text}`;
       await whatsappService.sendMessage(from, response, message.id);
@@ -36,7 +38,8 @@ class MessageHandler {
   getSenderName(senderInfo) {
     if (!senderInfo) return "Practicante de ValcomTI";
 
-    const name = senderInfo.profile?.name || senderInfo.wa_id || "Practicante de ValcomTI";
+    const name =
+      senderInfo.profile?.name || senderInfo.wa_id || "Practicante de ValcomTI";
 
     const firstName = name.split(" ")[0];
     return firstName;
@@ -50,6 +53,26 @@ class MessageHandler {
       "¿En que puedo ayudarte hoy?";
 
     await whatsappService.sendMessage(to, welcomeMessage, messageId);
+  }
+
+  async sendWelcomeMenu(to) {
+    const menuMessage = "Elige una opción";
+    const buttons = [
+      {
+        type: "reply",
+        reply: { id: "option_1", title: "Agendar" },
+      },
+      {
+        type: "reply",
+        reply: { id: "option_2", title: "Consultar" },
+      },
+      {
+        type: "reply",
+        replu: { id: "option_3", title: "Ubicación" },
+      },
+    ];
+
+    await whatsappService.sendInteractiveBottons(to, menuMessage, buttons);
   }
 }
 

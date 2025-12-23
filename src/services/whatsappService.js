@@ -51,6 +51,35 @@ class WhatsAppService {
       );
     }
   }
+
+  async sendInteractiveBottons (to, BodyText, buttons) {
+    try{
+      await axios({
+        method: 'POST',
+        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
+        headers: {
+          Authorization: `Bearer ${config.apiToken}`,
+          'Content-Type': 'application/json'
+        },
+        
+        data: {
+          messaging_product: 'whatsapp',
+          to,
+          type: 'interactive',
+          interactive: {
+            type: 'button',
+            body: { text: BodyText },
+            action: {
+              buttons: buttons
+            }
+          }
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 }
 
 export const whatsappService = new WhatsAppService();
