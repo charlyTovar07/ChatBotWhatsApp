@@ -4,17 +4,18 @@ import { config } from "../config/env.js";
 class MessageHandler {
   async handleIncomingMessage(message, senderInfo) {
     if (message?.type !== "text") return;
-
+    
+    const from = message.from;
+    const text = message.text.body;
     const incommingMessage = message.text.body.toLowerCase().trim();
 
     if (this.isGreeting(incommingMessage)) {
-      await this.sendWelcomeMessage(message.from, message.id);
+      await this.sendWelcomeMessage(message.from, message.id, senderInfo);
     } else {
       const response = `Echo: ${text}`;
-      await whatsappService.sendMessage(from, response, message.id, senderInfo);
+      await whatsappService.sendMessage(from, response, message.id);
     }
-    const from = message.from;
-    const text = message.text.body;
+    
 
     await whatsappService.markAsRead(message.id);
   }
@@ -25,6 +26,8 @@ class MessageHandler {
   }
 
   getSenderName(senderInfo){
+    if (!senderInfo) return "Practicante de ValcomTI";
+
     return senderInfo.profile?.name || senderInfo.wa_id || "Practicante de ValcomTI";
   }
 
