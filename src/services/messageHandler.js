@@ -158,11 +158,11 @@ class MessageHandler {
         break;
       case 'petName':
         state.petName = message;
-        state.step = 'PetType';
+        state.step = 'petType';
         response = '¿Qué tipo de mascota es? (por ejemplo: perro, gato, huron, etc...)'
         break;
       case 'petType':
-        step.petType = message;
+        state.petType = message;
         state.step = 'reason';
         response = '¿Cuál es el motivo de la consulta?';
         break;
