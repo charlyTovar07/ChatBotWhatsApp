@@ -14,7 +14,7 @@ class MessageHandler {
 
     if (this.isGreeting(incommingMessage)) {
       await this.sendWelcomeMessage(message.from, message.id, senderInfo);
-      await this.sendInteractiveBottons(message.from);
+      await this.sendWelcomeMenu(message.from);
 
     } else {
       const response = `Echo: ${text}`;
@@ -68,7 +68,7 @@ class MessageHandler {
       },
       {
         type: "reply",
-        replu: { id: "option_3", title: "Ubicación" },
+        reply: { id: "option_3", title: "Ubicación" },
       },
     ];
 
