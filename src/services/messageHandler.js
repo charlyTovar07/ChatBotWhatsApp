@@ -116,7 +116,7 @@ class MessageHandler {
   async sendMedia(to, type) {
     const mediaMap = {
       audio: {
-        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/good_moorning.mp3",
+        url: "https://s3.amazonaws.com/gndx.dev/medpet-audio.aac",
         caption: null,
       },
       image: {
