@@ -103,7 +103,7 @@ class MessageHandler {
 
   async sendMedia(to) {
     const mediaURL =
-      "https://www.dropbox.com/scl/fi/jawylgtksb7xrj12yy0j7/Bienvenida.m4a?rlkey=arrd1zlgpw6g7hnuv07eioro6&st=u90o3mg2&dl=1";
+      "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/Bienvenida.m4a";
     const caption = "¡Bienvenido!";
     const type = "audio";
 
