@@ -4,10 +4,10 @@ import { config } from "../config/env.js";
 class WebhookController {
   handleIncoming = async (req, res) => {
     try {
-      const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-
+      const message = req.body.entry?.[0]?.changes[0]?.value?.messages?.[0];
+      const senderInfo = req.body.entry?.[0]?.changes[0]?.value?.contacts?.[0];
       if (message) {
-        await messageHandler.handleIncomingMessage(message);
+        await messageHandler.handleIncomingMessage(message, senderInfo);
       }
 
       res.sendStatus(200);

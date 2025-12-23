@@ -6,11 +6,12 @@ class WhatsAppService {
     try {
       await axios({
         method: 'POST',
-        url: `https://graph.facebook.com/${config.api_version}/${config.phoneNumberId}/messages`,
+        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
         headers: {
           Authorization: `Bearer ${config.apiToken}`,
           'Content-Type': 'application/json'
         },
+        
         data: {
           messaging_product: 'whatsapp',
           to,
@@ -32,7 +33,7 @@ class WhatsAppService {
     try {
       await axios({
         method: 'POST',
-        url: `https://graph.facebook.com/${config.api_version}/${config.phoneNumberId}/messages`,
+        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
         headers: {
           Authorization: `Bearer ${config.apiToken}`,
           'Content-Type': 'application/json'
