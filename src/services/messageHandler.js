@@ -5,29 +5,22 @@ class MessageHandler {
   async handleIncomingMessage(message) {
     if (message?.type !== "text") return;
 
+    const incommingMessage = message.text.body.toLowerCase().trim();
+
+    if (this.isGreeting(incommingMessage)) {
+      await this.sendWelcomeMessage(message.from, message.id);
+    } else {
+      const response = `Echo: ${text}`;
+      await whatsappService.sendMessage(from, response, message.id);
+    }
     const from = message.from;
     const text = message.text.body;
 
-    console.log("API VERSION:", config.api_version);
-    console.log("PHONE NUMBER ID:", config.phoneNumberId);
-
-    const response = `Echo: ${text}`;
-
-    await whatsappService.sendMessage(from, response, message.id);
     await whatsappService.markAsRead(message.id);
   }
 
   isGreeting(message) {
-    const greetings = [
-      "Hola",
-      "hola",
-      "Hi",
-      "hi",
-      "Buenos días",
-      "Buenas tardes",
-      "buenos días",
-      "buenas tardes",
-    ];
+    const greetings = ["hola", "hi", "buenos días", "buenas tardes"];
     return greetings.includes(message);
   }
 

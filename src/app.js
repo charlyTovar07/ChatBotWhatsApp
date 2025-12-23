@@ -1,6 +1,6 @@
 import express from "express";
-import webhookRoutes from "./src/routes/webhookRoutes.js";
-import { config } from "./src/config/env.js";
+import webhookRoutes from "./routes/webhookRoutes.js";
+import { config } from "./config/env.js";
 
 const app = express();
 app.use(express.json());
