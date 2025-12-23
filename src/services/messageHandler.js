@@ -1,5 +1,4 @@
 import { whatsappService } from "../services/whatsappService.js";
-import { config } from "../config/env.js";
 
 class MessageHandler {
   async handleIncomingMessage(message, senderInfo) {
@@ -7,7 +6,7 @@ class MessageHandler {
     
     const from = message.from;
     const text = message.text.body;
-    const incommingMessage = message.text.body.toLowerCase().trim();
+    const incommingMessage = message.text.body.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
     if (this.isGreeting(incommingMessage)) {
       await this.sendWelcomeMessage(message.from, message.id, senderInfo);
@@ -21,7 +20,7 @@ class MessageHandler {
   }
 
   isGreeting(message) {
-    const greetings = ["hola", "hi", "buenos días", "buenas tardes"];
+    const greetings = ["hola", "hi", "buenos días", "buenos dias", "buenas tardes", "buenas noches"];
     return greetings.includes(message);
   }
 
