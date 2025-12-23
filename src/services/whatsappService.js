@@ -83,37 +83,54 @@ class WhatsAppService {
       const mediaObject = {};
 
       switch (type) {
-        case 'image':
-          mediaObject.image = { link: mediaUrl, caption: caption }
+        case "image":
+          mediaObject.image = { link: mediaUrl, caption };
           break;
-        case 'audio':
-          mediaObject.audio = { link:mediaUrl }
+
+        case "audio":
+          mediaObject.audio = { link: mediaUrl };
           break;
-        case 'video':
-          mediaObject.video = { link: mediaUrl, caption: caption }
+
+        case "video":
+          mediaObject.video = { link: mediaUrl, caption };
           break;
-        case 'document':
-          mediaObject.document = { link: mediaUrl, caption: caption, filename: 'medpet.pdf' }
+
+        case "document":
+          mediaObject.document = {
+            link: mediaUrl,
+            caption,
+            filename: "archivo.pdf",
+          };
           break;
+
+        case "sticker":
+          mediaObject.sticker = { link: mediaUrl };
+          break;
+
         default:
-          throw new Error('Not Sopported Media Type');
+          throw new Error("Unsupported media type");
       }
 
-      await axios({
-        method: 'POST',
-        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
-        headers: {
-          Authorization: `Bearer ${config.apiToken}`,
-        },
-        data: {
-          messaging_product: 'whatsapp',
+      await axios.post(
+        `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
+        {
+          messaging_product: "whatsapp",
           to,
-          type: type,
-          ...mediaObject
+          type,
+          ...mediaObject,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${config.apiToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
     } catch (error) {
-      console.error('Error sending Media', error);
+      console.error(
+        "Error sending media:",
+        error.response?.data || error.message
+      );
     }
   }
 }

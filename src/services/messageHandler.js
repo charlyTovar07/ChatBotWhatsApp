@@ -3,7 +3,6 @@ import { whatsappService } from "../services/whatsappService.js";
 class MessageHandler {
   async handleIncomingMessage(message, senderInfo) {
     if (message?.type === "text") {
-      const from = message.from;
       const text = message.text.body;
 
       const incomingMessage = text
@@ -15,17 +14,26 @@ class MessageHandler {
       if (this.isGreeting(incomingMessage)) {
         await this.sendWelcomeMessage(message.from, message.id, senderInfo);
         await this.sendWelcomeMenu(message.from);
-      } else if (message?.type === "media") {
-        await this.sendMedia(message.from);
-        await whatsappService.markAsRead(message.id);
       } else {
         const response = `Echo: ${message.text.body}`;
         await whatsappService.sendMessage(message.from, response, message.id);
       }
       await whatsappService.markAsRead(message.id);
-    } else if (message?.type === "interactive") {
+      return;
+    }
+    // MEDIA (image, audio, video, document, sticker)
+    if (
+      ["image", "audio", "video", "document", "sticker"].includes(message.type)
+    ) {
+      await this.sendMedia(from, message.type);
+      await whatsappService.markAsRead(message.id);
+      return;
+    }
+
+    // INTERACTIVOS
+    if (message.type === "interactive") {
       const option = message.interactive?.button_reply?.id;
-      await this.handleMenuOption(message.from, option);
+      await this.handleMenuOption(from, option);
       await whatsappService.markAsRead(message.id);
     }
   }
@@ -101,24 +109,34 @@ class MessageHandler {
     await whatsappService.sendMessage(to, response);
   }
 
-  async sendMedia(to) {
-    const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-audio.aac';
-    const caption = 'Bienvenida';
-    const type = 'audio';
+  async sendMedia(to, type) {
+    const mediaMap = {
+      audio: {
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/Bienvenida.m4a",
+        caption: null,
+      },
+      image: {
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/logo.jpg",
+        caption: "¡Esto es una imagen!",
+      },
+      video: {
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/Veterinaria.mp4",
+        caption: "¡Esto es un video!",
+      },
+      document: {
+        url: "https://s3.amazonaws.com/gndx.dev/medpet-file.pdf",
+        caption: "¡Esto es un PDF!",
+      },
+      sticker: {
+        url: "https://s3.amazonaws.com/gndx.dev/medpet-sticker.webp",
+        caption: null,
+      },
+    };
 
-    // const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-imagen.png';
-    // const caption = '¡Esto es una Imagen!';
-    // const type = 'image';
+    const media = mediaMap[type];
+    if (!media) return;
 
-    // const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-video.mp4';
-    // const caption = '¡Esto es una video!';
-    // const type = 'video';
-
-    // const mediaUrl = 'https://s3.amazonaws.com/gndx.dev/medpet-file.pdf';
-    // const caption = '¡Esto es un PDF!';
-    // const type = 'document';
-
-    await whatsappService.sendMediaMessage(to, type, mediaUrl, caption);
+    await whatsappService.sendMediaMessage(to, type, media.url, media.caption);
   }
 }
 
