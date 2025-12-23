@@ -5,24 +5,25 @@ class MessageHandler {
     if (message?.type === "text") {
       const from = message.from;
       const text = message.text.body;
-      const incommingMessage = message.text.body
+
+      const incomingMessage = text
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .trim();
 
-      if (this.isGreeting(incommingMessage)) {
-        await this.sendWelcomeMessage(message.from, message.id, senderInfo);
-        await this.sendWelcomeMenu(message.from);
+      if (this.isGreeting(incomingMessage)) {
+        await this.sendWelcomeMessage(from, message.id, senderInfo);
+        await this.sendWelcomeMenu(from);
       } else {
         const response = `Echo: ${text}`;
         await whatsappService.sendMessage(from, response, message.id);
       }
+
       await whatsappService.markAsRead(message.id);
     } else if (message?.type === "interactive") {
-      const option = message?.interactive?.button_reply?.title
-        .toLowerCase()
-        .trim();
+      const option = message.interactive?.button_reply?.id;
+
       await this.handleMenuOption(message.from, option);
       await whatsappService.markAsRead(message.id);
     }
@@ -82,20 +83,19 @@ class MessageHandler {
 
   async handleMenuOption(to, option) {
     let response;
-
     switch (option) {
-      case "agendar":
+      case "option_1":
         response = "Agendar Cita";
-        break
-      case "consultar":
+        break;
+      case "option_2":
         response = "Realiza tu consulta";
-        break
-      case "ubicacion":
+        break;
+      case "option_3":
         response = "Esta es nuestra Ubicación";
-        break
+        break;
       default:
         response =
-          "Lo siento, no entendí tu selección. Por favor elige las opciones disponibles.";
+          "Lo siento, no entendí tu selección. Por favor elige una opción válida.";
     }
     await whatsappService.sendMessage(to, response);
   }

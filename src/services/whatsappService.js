@@ -100,7 +100,7 @@ class WhatsAppService {
           };
           break;
         default:
-          throw new Error("Not soported media Type.");
+          throw new Error("Not supported media Type.");
       }
       await axios({
         method: "POST",
