@@ -1,4 +1,5 @@
 import { whatsappService } from "../services/whatsappService.js";
+import { config } from "../config/env.js";
 
 class MessageHandler {
   async handleIncomingMessage(message) {
@@ -35,7 +36,7 @@ class MessageHandler {
       "Hola, bienvenido al servicio de PETVET online." +
       "¿En que puedo ayudarte hoy?";
 
-    await whatsappService.sendMessage(to, message);
+    await whatsappService.sendMessage(to, welcomeMessage, messageId);
   }
 }
 
