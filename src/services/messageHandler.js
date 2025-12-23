@@ -100,7 +100,8 @@ class MessageHandler {
     let response;
     switch (option) {
       case "option_1":
-        response = "Agendar Cita";
+        this.appointmentState[to] = {step: 'name'}
+        response = "Por favor, ingresa tu nombre:";
         break;
       case "option_2":
         response = "Realiza tu consulta";
@@ -145,7 +146,32 @@ class MessageHandler {
     await whatsappService.sendMediaMessage(to, type, media.url, media.caption);
   }
 
-  async 
+  async handleAppointmentFlow(to, message){
+    const state = this.appointmentState[to];
+    let response;
+
+    switch(state.step){
+      case 'name':
+        state.name = message;
+        state.step = 'petName';
+        response = 'Gracias, ahora, ¿Cuál es el nombre de tu mascota?'
+        break;
+      case 'petName':
+        state.petName = message;
+        state.step = 'PetType';
+        response = '¿Qué tipo de mascota es? (por ejemplo: perro, gato, huron, etc...)'
+        break;
+      case 'petType':
+        step.petType = message;
+        state.step = 'reason';
+        response = '¿Cuál es el motivo de la consulta?';
+        break;
+      case 'reason':
+        state.reason = message;
+        response = 'Gracias por agendar tu cita'
+    }
+    await whatsappService.sendMessage(to, message);
+  }
 
 }
 
