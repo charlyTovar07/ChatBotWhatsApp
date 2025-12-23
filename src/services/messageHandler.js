@@ -2,7 +2,7 @@ import { whatsappService } from "../services/whatsappService.js";
 
 class MessageHandler {
   async handleIncomingMessage(message, senderInfo) {
-    if (message?.type !== "text") {
+    if (message?.type === "text") {
       const from = message.from;
       const text = message.text.body;
       const incommingMessage = message.text.body
@@ -20,9 +20,8 @@ class MessageHandler {
       }
       await whatsappService.markAsRead(message.id);
     } else if (message?.type === "interactive") {
-      const option = message?.interactive?.button_reply?.title
-        .toLowerCase()
-        .tim();
+      const option = message.interactive?.button_reply?.id;
+      
       await this.handleMenuOption(message.from, option);
       await whatsappService.markAsRead(message.id);
     }
@@ -91,7 +90,7 @@ class MessageHandler {
         response = "Realiza tu consulta";
         break
       case "ubicacion":
-        response: "Esta es nuestra Ubicación";
+        response = "Esta es nuestra Ubicación";
         break
       default:
         response =

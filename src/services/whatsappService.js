@@ -77,6 +77,51 @@ class WhatsAppService {
       console.error(error);
     }
   }
+
+  async sendMediaMessage(to, type, mediaURL, caption) {
+    try {
+      const mediaObject = {};
+
+      switch (type) {
+        case "image":
+          mediaObject.image = { link: mediaURL, caption: caption };
+          break;
+        case "audio":
+          mediaObject.audio = { link: mediaURL };
+          break;
+        case "video":
+          mediaObject.video = { link: mediaURL, caption: caption };
+          break;
+        case "document":
+          mediaObject.document = {
+            link: mediaURL,
+            caption: caption,
+            filename: "vetpet.pdf",
+          };
+          break;
+        default:
+          throw new Error("Not soported media Type.");
+          break;
+      }
+      await axios({
+        method: "POST",
+        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
+        headers: {
+          Authorization: `Bearer ${config.apiToken}`,
+          "Content-Type": "application/json",
+        },
+
+        data: {
+          messaging_product: "whatsapp",
+          to,
+          text: { body },
+          // context: { message_id: messageId },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 export const whatsappService = new WhatsAppService();
