@@ -78,47 +78,42 @@ class WhatsAppService {
     }
   }
 
-  async sendMediaMessage(to, type, mediaURL, caption) {
+  async sendMediaMessage(to, type, mediaUrl, caption) {
     try {
       const mediaObject = {};
 
       switch (type) {
-        case "image":
-          mediaObject.image = { link: mediaURL, caption: caption };
+        case 'image':
+          mediaObject.image = { link: mediaUrl, caption: caption }
           break;
-        case "audio":
-          mediaObject.audio = { link: mediaURL };
+        case 'audio':
+          mediaObject.audio = { link:mediaUrl }
           break;
-        case "video":
-          mediaObject.video = { link: mediaURL, caption: caption };
+        case 'video':
+          mediaObject.video = { link: mediaUrl, caption: caption }
           break;
-        case "document":
-          mediaObject.document = {
-            link: mediaURL,
-            caption: caption,
-            filename: "vetpet.pdf",
-          };
+        case 'document':
+          mediaObject.document = { link: mediaUrl, caption: caption, filename: 'medpet.pdf' }
           break;
         default:
-          throw new Error("Not supported media Type.");
+          throw new Error('Not Sopported Media Type');
       }
+
       await axios({
-        method: "POST",
+        method: 'POST',
         url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
         headers: {
           Authorization: `Bearer ${config.apiToken}`,
-          "Content-Type": "application/json",
         },
-
         data: {
-          messaging_product: "whatsapp",
+          messaging_product: 'whatsapp',
           to,
           type: type,
-          ...mediaObject,
+          ...mediaObject
         },
       });
     } catch (error) {
-      console.error("Error sending Media", error);
+      console.error('Error sending Media', error);
     }
   }
 }
