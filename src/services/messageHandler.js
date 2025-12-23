@@ -1,10 +1,14 @@
 import { whatsappService } from "../services/whatsappService.js";
 
 class MessageHandler {
+
+  constructor () {
+    this.appointmentState = {};
+  }
+
   async handleIncomingMessage(message, senderInfo) {
     const from = message.from;
 
-    // TEXTO
     if (message.type === "text") {
       const text = message.text.body;
 
@@ -25,7 +29,6 @@ class MessageHandler {
       return;
     }
 
-    // MEDIA (image, audio, video, document, sticker)
     if (
       ["image", "audio", "video", "document", "sticker"].includes(message.type)
     ) {
@@ -34,7 +37,6 @@ class MessageHandler {
       return;
     }
 
-    // INTERACTIVOS
     if (message.type === "interactive") {
       const option = message.interactive?.button_reply?.id;
       await this.handleMenuOption(from, option);
@@ -116,7 +118,7 @@ class MessageHandler {
   async sendMedia(to, type) {
     const mediaMap = {
       audio: {
-        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/good_moorning.ogg",
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/good_moorning.aac",
         caption: null,
       },
       image: {
@@ -142,6 +144,9 @@ class MessageHandler {
 
     await whatsappService.sendMediaMessage(to, type, media.url, media.caption);
   }
+
+  async 
+
 }
 
 export default new MessageHandler();
