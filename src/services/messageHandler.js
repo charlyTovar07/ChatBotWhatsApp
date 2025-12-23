@@ -2,7 +2,10 @@ import { whatsappService } from "../services/whatsappService.js";
 
 class MessageHandler {
   async handleIncomingMessage(message, senderInfo) {
-    if (message?.type === "text") {
+    const from = message.from;
+
+    // TEXTO
+    if (message.type === "text") {
       const text = message.text.body;
 
       const incomingMessage = text
@@ -12,15 +15,16 @@ class MessageHandler {
         .trim();
 
       if (this.isGreeting(incomingMessage)) {
-        await this.sendWelcomeMessage(message.from, message.id, senderInfo);
-        await this.sendWelcomeMenu(message.from);
+        await this.sendWelcomeMessage(from, message.id, senderInfo);
+        await this.sendWelcomeMenu(from);
       } else {
-        const response = `Echo: ${message.text.body}`;
-        await whatsappService.sendMessage(message.from, response, message.id);
+        await whatsappService.sendMessage(from, `Echo: ${text}`, message.id);
       }
+
       await whatsappService.markAsRead(message.id);
       return;
     }
+
     // MEDIA (image, audio, video, document, sticker)
     if (
       ["image", "audio", "video", "document", "sticker"].includes(message.type)
@@ -128,7 +132,7 @@ class MessageHandler {
         caption: "¡Esto es un PDF!",
       },
       sticker: {
-        url: "https://s3.amazonaws.com/gndx.dev/medpet-sticker.webp",
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/sticker_vetpet.webp",
         caption: null,
       },
     };
