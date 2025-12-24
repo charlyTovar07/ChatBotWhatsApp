@@ -107,6 +107,7 @@ class MessageHandler {
       case "option_4":
         response =
           "Le agradecemos por su acercamiento con nosotros. Si tiene otra consulta no dude en hacernosla saber.";
+        await this.sendWelcomeMenu(to);
         break;
       case "option_hacer_pregunta":
         response = "Perfecto, escribe tu nueva pregunta.";
@@ -188,23 +189,28 @@ class MessageHandler {
     const appointment = this.appointmentState[to];
     delete this.appointmentState[to];
 
+    const now = new Date();
+    const formattedDate = `${String(now.getDate()).padStart(2, "0")}/${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}/${now.getFullYear()}`;
+
     const userData = [
       to,
       appointment.name,
       appointment.petName,
       appointment.petType,
       appointment.reason,
-      new Date().toISOString(),
+      formattedDate,
     ];
 
     appendToSheet(userData);
 
     return `Gracias por agendar tu cita. Resumen de tu cita:
-            Nombre: ${appointment.name}
-            Nombre de la mascota: ${appointment.petName}
-            Tipo de mascota: ${appointment.petType}
-            Motivo: ${appointment.reason}
-            Nos pondremos en contacto contigo pronto, para confirmar la fecha y hora de tu cita.`;
+    Nombre: ${appointment.name}
+    Nombre de la mascota: ${appointment.petName}
+    Tipo de mascota: ${appointment.petType}
+    Motivo: ${appointment.reason}
+    Nos pondremos en contacto contigo pronto, para confirmar la fecha y hora de tu cita.`;
   }
 
   async handleAssistandFlow(to, message) {
