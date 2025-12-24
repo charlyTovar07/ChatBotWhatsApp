@@ -133,7 +133,7 @@ class MessageHandler {
         caption: null,
       },
       image: {
-        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/logo.jpg",
+        url: "https://bucketcharlyamazon07.s3.us-east-2.amazonaws.com/public/Logo_vetpet",
         caption: "¡Esto es una imagen!",
       },
       video: {
