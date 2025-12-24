@@ -1,4 +1,5 @@
 import { whatsappService } from "../services/whatsappService.js";
+import { appendToSheet } from './googleSheetsService.js';
 
 class MessageHandler {
   constructor() {
@@ -148,7 +149,7 @@ class MessageHandler {
       case "petName":
         state.petName = message;
         state.step = "petType";
-        response = "¿Qué tipo de mascota es?";
+        response = "¿Qué tipo de mascota es? (perro, gato, huron, etc)";
         break;
       case "petType":
         state.petType = message;
@@ -177,14 +178,13 @@ class MessageHandler {
       new Date().toISOString()
     ]
 
-    console.log(userData);
+    appendToSheet(userData);
 
     return `Gracias por agendar tu cita. Resumen de tu cita:
             Nombre: ${appointment.name}
             Nombre de la mascota: ${appointment.petName}
             Tipo de mascota: ${appointment.petType}
             Motivo: ${appointment.reason}
-            
             Nos pondremos en contacto contigo pronto, para confirmar la fecha y hora de tu cita.`;
   }
 }
