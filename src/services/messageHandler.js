@@ -1,5 +1,5 @@
 import { whatsappService } from "../services/whatsappService.js";
-import { appendToSheet } from './googleSheetsService.js';
+import appendToSheet from './googleSheetsService.js';
 
 class MessageHandler {
   constructor() {

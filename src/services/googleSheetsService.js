@@ -1,23 +1,18 @@
-import path from "path";
 import { google } from "googleapis";
 
 const sheets = google.sheets("v4");
 
 async function addRowToSheet(auth, spreadsheetId, values) {
-  const request = {
-    spreadsheetId,
-    range: "reservas",
-    valueInputOption: "RAW",
-    insertDataOption: "INSERT_ROWS",
-    resource: {
-      values: [values],
-    },
-    auth,
-  };
-
   try {
-    const response = await sheets.spreadsheets.values.append(request).data;
-    return response;
+    const response = await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: "reservas",
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      resource: { values: [values] },
+      auth,
+    });
+    return response.data;
   } catch (error) {
     console.error(error);
   }
@@ -26,7 +21,7 @@ async function addRowToSheet(auth, spreadsheetId, values) {
 const appendToSheet = async (data) => {
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: path.join(process.cwd(), "src/credentials", "credentials.json"),
+      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
