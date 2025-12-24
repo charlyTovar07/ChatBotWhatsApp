@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(config.geminiApiKey);
 const geminiService = async (message) => {
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-2.5-flash",
       systemInstruction: `
         Comportarte como un veterinario.
         Responde simple, texto plano.
