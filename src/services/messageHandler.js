@@ -105,11 +105,12 @@ class MessageHandler {
         await this.sendLocation(to);
         break;
       case "option_4":
-        response = "Le agradecemos por su acercamiento con nosotros. Si tiene otra consulta no dude en hacernosla saber.";
-        await this.sendWelcomeMessage(to);
+        response =
+          "Le agradecemos por su acercamiento con nosotros. Si tiene otra consulta no dude en hacernosla saber.";
         break;
       case "option_hacer_pregunta":
-        response = "Le agradecemos por su acercamiento con nosotros. Si tiene otra consulta no dude en hacernosla saber.";
+        response = "Perfecto, escribe tu nueva pregunta.";
+        this.assistandState[to] = { step: "question" };
         break;
       case "option_emergencia":
         await this.sendContact(to);
