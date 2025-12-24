@@ -104,6 +104,13 @@ class MessageHandler {
         response = "Te esperamos en nuestra sucursal.";
         await this.sendLocation(to);
         break;
+      case "option_4":
+        response = "Le agradecemos por su acercamiento con nosotros. Si tiene otra consulta no dude en hacernosla saber.";
+        await this.sendWelcomeMessage(to);
+        break;
+      case "option_hacer_pregunta":
+        response = "Le agradecemos por su acercamiento con nosotros. Si tiene otra consulta no dude en hacernosla saber.";
+        break;
       case "option_emergencia":
         await this.sendContact(to);
         response =
@@ -208,7 +215,7 @@ class MessageHandler {
       { type: "reply", reply: { id: "option_4", title: "Sí, Gracias" } },
       {
         type: "reply",
-        reply: { id: "option_5", title: "Hacer otra pregunta" },
+        reply: { id: "option_hacer_pregunta", title: "Hacer otra pregunta" },
       },
       {
         type: "reply",
