@@ -103,9 +103,9 @@ class MessageHandler {
       case "option_3":
         response = "Esta es nuestra Ubicación";
         break;
-      case 'option_4':
-        response = "Sí esto es una emergencia, te invitamos a llamar a nuestra línea de atención";
+      case 'option_emergencia':
         await this.sendContact(to);
+        response = "Sí esto es una emergencia, te invitamos a llamar a nuestra línea de atención";
         break;
       default:
         response =
@@ -208,7 +208,7 @@ class MessageHandler {
         type: "reply",
         reply: { id: "option_5", title: "Hacer otra pregunta" },
       },
-      { type: "reply", reply: { id: "option_6", title: "Emergencia" } },
+      { type: "reply", reply: { id: "option_emergencia", title: "Emergencia" } },
     ];
 
     if (state.step === "question") {
