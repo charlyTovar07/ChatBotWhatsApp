@@ -1,7 +1,6 @@
 import { whatsappService } from "../services/whatsappService.js";
 import geminiService from "./geminiService.js";
-import appendToSheet from './googleSheetsService.js';
-
+import appendToSheet from "./googleSheetsService.js";
 
 class MessageHandler {
   constructor() {
@@ -30,8 +29,7 @@ class MessageHandler {
         await this.handleAppointmentFlow(from, incomingMessage);
       } else if (this.assistandState[from]) {
         await this.handleAssistandFlow(from, incomingMessage);
-      }
-       else {
+      } else {
         await this.handleMenuOption(from, incomingMessage);
       }
 
@@ -99,6 +97,7 @@ class MessageHandler {
         response = "Por favor, ingresa tu nombre:";
         break;
       case "option_2":
+        this.assistandState[to] = { step: "question" };
         response = "Realiza tu consulta";
         break;
       case "option_3":
@@ -181,8 +180,8 @@ class MessageHandler {
       appointment.petName,
       appointment.petType,
       appointment.reason,
-      new Date().toISOString()
-    ]
+      new Date().toISOString(),
+    ];
 
     appendToSheet(userData);
 
@@ -194,18 +193,21 @@ class MessageHandler {
             Nos pondremos en contacto contigo pronto, para confirmar la fecha y hora de tu cita.`;
   }
 
-  async handleAssistandFlow (to, message) {
+  async handleAssistandFlow(to, message) {
     const state = this.assistandState[to];
     let response;
 
-    const menuMessage = "¿La respuesta fué de tu ayuda?"
+    const menuMessage = "¿La respuesta fué de tu ayuda?";
     const buttons = [
-      { type: 'reply', reply: { id: 'option_4', title: 'Sí, Gracias'} },
-      { type: 'reply', reply: { id: 'option_5', title: 'Hacer otra pregunta' } },
-      { type: 'reply', reply: { id: 'option_6', title: 'Emergencia' } }
-    ]
+      { type: "reply", reply: { id: "option_4", title: "Sí, Gracias" } },
+      {
+        type: "reply",
+        reply: { id: "option_5", title: "Hacer otra pregunta" },
+      },
+      { type: "reply", reply: { id: "option_6", title: "Emergencia" } },
+    ];
 
-    if(state.step === 'question') {
+    if (state.step === "question") {
       response = await geminiService(message);
     }
 
