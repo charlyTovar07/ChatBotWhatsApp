@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { google } from "googleapis";
 
 const sheets = google.sheets("v4");
@@ -20,8 +22,12 @@ async function addRowToSheet(auth, spreadsheetId, values) {
 
 const appendToSheet = async (data) => {
   try {
+    // --- Crear archivo temporal de credenciales ---
+    const credentialsPath = path.join(process.cwd(), "credentials.json");
+    fs.writeFileSync(credentialsPath, process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+
     const auth = new google.auth.GoogleAuth({
-      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      keyFile: credentialsPath,
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
@@ -32,6 +38,11 @@ const appendToSheet = async (data) => {
     return "Datos correctamente agregados";
   } catch (error) {
     console.error(error);
+  } finally {
+    // --- Limpiar archivo temporal ---
+    if (fs.existsSync(path.join(process.cwd(), "credentials.json"))) {
+      fs.unlinkSync(path.join(process.cwd(), "credentials.json"));
+    }
   }
 };
 
