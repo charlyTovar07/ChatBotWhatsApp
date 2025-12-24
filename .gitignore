@@ -1,2 +1,4 @@
 node_modules/
 .env
+# Google credentials
+src/credentials/credentials.json
