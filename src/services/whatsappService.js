@@ -136,45 +136,50 @@ class WhatsAppService {
 
   async sendContactMessage(to, contact) {
     await axios({
-        method: "POST",
-        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
-        headers: {
-          Authorization: `Bearer ${config.apiToken}`,
-        },
+      method: "POST",
+      url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
+      headers: {
+        Authorization: `Bearer ${config.apiToken}`,
+      },
 
-        data: {
-          messaging_product: "whatsapp",
-          to,
-          type: 'contacts',
-          contacts:[contact]
-        },
-      });
+      data: {
+        messaging_product: "whatsapp",
+        to,
+        type: "contacts",
+        contacts: [contact],
+      },
+    });
   }
 
-
-  async sendLocationMessage(to, latitude, longitude, name, addresses){
-    try{
-      await axios({
-        method: "POST",
-        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
-        headers: {
-          Authorization: `Bearer ${config.apiToken}`,
+  async sendLocationMessage(to, location) {
+    try {
+      const payload = {
+        messaging_product: "whatsapp",
+        to,
+        type: "location",
+        location: {
+          latitude: Number(location.latitude),
+          longitude: Number(location.longitude),
+          name: location.name,
+          address: location.address,
         },
+      };
 
-        data: {
-          messaging_product: "whatsapp",
-          to,
-          type: 'location',
-          location: {
-            latitude: latitude,
-            longitude: longitude,
-            name: name,
-            addresses: addresses
-          }
-        },
-      });
-    }catch(error) {
-      console.error(error);
+      await axios.post(
+        `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${config.apiToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.error(
+        "Error sending location:",
+        error.response?.data || error.message
+      );
     }
   }
 }

@@ -276,12 +276,15 @@ class MessageHandler {
   }
 
   async sendLocation(to) {
-    const latitude = 21.149412091722603;
-    const longitude = -101.65857289178;
-    const name = 'Valcom TI';
-    const addresses = 'Catalina Villavicencio 210, La Alameda, 37204 León de los Aldama, Gto.'
+    const location = {
+      latitude: 21.149412091722603,
+      longitude: -101.65857289178,
+      name: "Valcom TI",
+      address:
+        "Catalina Villavicencio 210, La Alameda, 37204 León de los Aldama, Gto.",
+    };
 
-    await whatsappService.sendLocationMessage(to, latitude, longitude, name, addresses);
+    await whatsappService.sendLocationMessage(to, location);
   }
 }
 
