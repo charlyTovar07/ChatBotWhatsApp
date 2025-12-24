@@ -8,4 +8,5 @@ export const config = {
   phoneNumberId: process.env.BUSINESS_PHONE,
   api_version: process.env.API_VERSION,
   port: process.env.PORT || 3000,
+  geminiApiKey: process.env.GEMINI_API_KEY
 };

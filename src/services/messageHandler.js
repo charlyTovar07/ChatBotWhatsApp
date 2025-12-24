@@ -1,6 +1,7 @@
 import { whatsappService } from "../services/whatsappService.js";
+import geminiService from "./geminiService.js";
 import appendToSheet from './googleSheetsService.js';
-import openAiService from "./openAiService.js";
+
 
 class MessageHandler {
   constructor() {
@@ -205,7 +206,7 @@ class MessageHandler {
     ]
 
     if(state.step === 'question') {
-      response = await openAiService(message);
+      response = await geminiService(message);
     }
 
     delete this.assistandState[to];
