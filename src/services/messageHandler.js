@@ -103,6 +103,10 @@ class MessageHandler {
       case "option_3":
         response = "Esta es nuestra Ubicación";
         break;
+      case 'option_4':
+        response = "Sí esto es una emergencia, te invitamos a llamar a nuestra línea de atención";
+        await this.sendContact(to);
+        break;
       default:
         response =
           "Lo siento, no entendí tu selección. Por favor elige una opción válida.";
@@ -214,6 +218,56 @@ class MessageHandler {
     delete this.assistandState[to];
     await whatsappService.sendMessage(to, response);
     await whatsappService.sendInteractiveBottons(to, menuMessage, buttons);
+  }
+
+  async sendContact(to){
+    const contact = {
+      addresses: [
+        {
+          street: "123 Calle de las Mascotas",
+          city: "Ciudad",
+          state: "Estado",
+          zip: "12345",
+          country: "Paí­s",
+          country_code: "PA",
+          type: "WORK"
+        }
+      ],
+      emails: [
+        {
+          email: "contacto@VetPet.com",
+          type: "WORK"
+        }
+      ],
+      name: {
+        formatted_name: "VetPet Contacto",
+        first_name: "VetPet",
+        last_name: "Contacto",
+        middle_name: "",
+        suffix: "",
+        prefix: ""
+      },
+      org: {
+        company: "VetPet",
+        department: "Atención al Cliente",
+        title: "Representante"
+      },
+      phones: [
+        {
+          phone: "+1234567890",
+          wa_id: "1234567890",
+          type: "WORK"
+        }
+      ],
+      urls: [
+        {
+          url: "https://www.VetPet.com",
+          type: "WORK"
+        }
+      ]
+    };
+
+    await whatsappService.sendContactMessage(to, contact);
   }
 }
 

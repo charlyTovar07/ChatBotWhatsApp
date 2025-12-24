@@ -133,6 +133,23 @@ class WhatsAppService {
       );
     }
   }
+
+  async sendContactMessage(to, contact) {
+    await axios({
+        method: "POST",
+        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
+        headers: {
+          Authorization: `Bearer ${config.apiToken}`,
+        },
+
+        data: {
+          messaging_product: "whatsapp",
+          to,
+          type: 'contacts',
+          contacts:[contact]
+        },
+      });
+  }
 }
 
 export const whatsappService = new WhatsAppService();
