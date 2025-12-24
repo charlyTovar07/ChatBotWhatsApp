@@ -3,7 +3,8 @@
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "googleapis": "^169.0.0"
+    "googleapis": "^169.0.0",
+    "openai": "^6.15.0"
   },
   "devDependencies": {
     "localtunnel": "^2.0.2",

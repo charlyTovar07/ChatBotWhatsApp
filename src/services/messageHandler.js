@@ -1,9 +1,11 @@
 import { whatsappService } from "../services/whatsappService.js";
 import appendToSheet from './googleSheetsService.js';
+import openAiService from "./openAiService.js";
 
 class MessageHandler {
   constructor() {
     this.appointmentState = {};
+    this.assistandState = {};
   }
 
   async handleIncomingMessage(message, senderInfo) {
@@ -25,7 +27,10 @@ class MessageHandler {
         await this.sendMedia(from, "audio");
       } else if (this.appointmentState[from]) {
         await this.handleAppointmentFlow(from, incomingMessage);
-      } else {
+      } else if (this.assistandState[from]) {
+        await this.handleAssistandFlow(from, incomingMessage);
+      }
+       else {
         await this.handleMenuOption(from, incomingMessage);
       }
 
@@ -186,6 +191,26 @@ class MessageHandler {
             Tipo de mascota: ${appointment.petType}
             Motivo: ${appointment.reason}
             Nos pondremos en contacto contigo pronto, para confirmar la fecha y hora de tu cita.`;
+  }
+
+  async handleAssistandFlow (to, message) {
+    const state = this.assistandState[to];
+    let response;
+
+    const menuMessage = "¿La respuesta fué de tu ayuda?"
+    const buttons = [
+      { type: 'reply', reply: { id: 'option_4', title: 'Sí, Gracias'} },
+      { type: 'reply', reply: { id: 'option_5', title: 'Hacer otra pregunta' } },
+      { type: 'reply', reply: { id: 'option_6', title: 'Emergencia' } }
+    ]
+
+    if(state.step === 'question') {
+      response = await openAiService(message);
+    }
+
+    delete this.assistandState[to];
+    await whatsappService.sendMessage(to, response);
+    await whatsappService.sendInteractiveBottons(to, menuMessage, buttons);
   }
 }
 
