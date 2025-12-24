@@ -1,5 +1,5 @@
 import OpenAi from "openai";
-import config from "../config/env"
+import { config } from '../config/env.js';
 
 const client = new OpenAi({
     apiKey: config.CHATGPT_API_KEY,
