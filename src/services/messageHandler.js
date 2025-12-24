@@ -101,11 +101,13 @@ class MessageHandler {
         response = "Realiza tu consulta";
         break;
       case "option_3":
-        response = "Esta es nuestra Ubicación";
+        response = "Te esperamos en nuestra sucursal.";
+        await this.sendLocation(to);
         break;
-      case 'option_emergencia':
+      case "option_emergencia":
         await this.sendContact(to);
-        response = "Sí esto es una emergencia, te invitamos a llamar a nuestra línea de atención";
+        response =
+          "Sí esto es una emergencia, te invitamos a llamar a nuestra línea de atención";
         break;
       default:
         response =
@@ -208,7 +210,10 @@ class MessageHandler {
         type: "reply",
         reply: { id: "option_5", title: "Hacer otra pregunta" },
       },
-      { type: "reply", reply: { id: "option_emergencia", title: "Emergencia" } },
+      {
+        type: "reply",
+        reply: { id: "option_emergencia", title: "Emergencia" },
+      },
     ];
 
     if (state.step === "question") {
@@ -220,7 +225,7 @@ class MessageHandler {
     await whatsappService.sendInteractiveBottons(to, menuMessage, buttons);
   }
 
-  async sendContact(to){
+  async sendContact(to) {
     const contact = {
       addresses: [
         {
@@ -230,14 +235,14 @@ class MessageHandler {
           zip: "12345",
           country: "Paí­s",
           country_code: "PA",
-          type: "WORK"
-        }
+          type: "WORK",
+        },
       ],
       emails: [
         {
           email: "contacto@VetPet.com",
-          type: "WORK"
-        }
+          type: "WORK",
+        },
       ],
       name: {
         formatted_name: "VetPet Contacto",
@@ -245,29 +250,38 @@ class MessageHandler {
         last_name: "Contacto",
         middle_name: "",
         suffix: "",
-        prefix: ""
+        prefix: "",
       },
       org: {
         company: "VetPet",
         department: "Atención al Cliente",
-        title: "Representante"
+        title: "Representante",
       },
       phones: [
         {
           phone: "+1234567890",
           wa_id: "1234567890",
-          type: "WORK"
-        }
+          type: "WORK",
+        },
       ],
       urls: [
         {
           url: "https://www.VetPet.com",
-          type: "WORK"
-        }
-      ]
+          type: "WORK",
+        },
+      ],
     };
 
     await whatsappService.sendContactMessage(to, contact);
+  }
+
+  async sendLocation(to) {
+    const latitude = 21.149412091722603;
+    const longitude = -101.65857289178;
+    const name = 'Valcom TI';
+    const addresses = 'Catalina Villavicencio 210, La Alameda, 37204 León de los Aldama, Gto.'
+
+    await whatsappService.sendLocationMessage(to, latitude, longitude, name, addresses);
   }
 }
 

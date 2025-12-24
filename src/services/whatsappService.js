@@ -150,6 +150,33 @@ class WhatsAppService {
         },
       });
   }
+
+
+  async sendLocationMessage(to, latitude, longitude, name, addresses){
+    try{
+      await axios({
+        method: "POST",
+        url: `https://graph.facebook.com/v18.0/${config.phoneNumberId}/messages`,
+        headers: {
+          Authorization: `Bearer ${config.apiToken}`,
+        },
+
+        data: {
+          messaging_product: "whatsapp",
+          to,
+          type: 'location',
+          location: {
+            latitude: latitude,
+            longitude: longitude,
+            name: name,
+            addresses: addresses
+          }
+        },
+      });
+    }catch(error) {
+      console.error(error);
+    }
+  }
 }
 
 export const whatsappService = new WhatsAppService();
